@@ -97,7 +97,7 @@ const PlayerSearch: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = "https://eternalrankingcollector-6lpmf4rgtq-uw.a.run.app/players?"
+        let url = `${process.env.REACT_APP_API_ENDPOINT}/players?`
 
         Object.keys(searchParams).forEach(key => {
           const value = searchParams[key];
