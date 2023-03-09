@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'
-import ReactDOM from 'react-dom';
+import { useParams } from 'react-router-dom';
 import { Line } from '@ant-design/plots';
 
-import { Button, Form, Input, Select, theme, Typography, Row, Col, Divider, Table, Space, Tag } from 'antd';
+import { theme, Typography, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { TinyLine } from '@ant-design/charts';
-import { StringMappingType } from 'typescript';
 
 interface DataType {
   detail: {
     id: BigInteger,
     name: string,
     server: string,
-    job: string,
-    guild_id: BigInteger,
+    master: string,
     score: BigInteger,
-    level: BigInteger,
-    talent_id: BigInteger,
   },
   histories: [
     {
-      guild_id: BigInteger,
       score: BigInteger,
-      level: BigInteger,
-      talent_id: BigInteger,
+      master: string,
       stored_on: Date,
     }
   ]
@@ -35,30 +27,28 @@ interface DetailTableDataType {
   value: string;
 }
 
-interface ChartConfigType {
-  data: ChartDataType[];
-  xField: string;
-  yField: string;
-  xAxis: {
-      tickCount: number;
-  };
-}
-
 interface ChartDataType {
   score: number,
   date: string,
 }
 
+interface ChartConfigType {
+  data: ChartDataType[];
+  xField: string;
+  yField: string;
+  xAxis: {
+    tickCount: number;
+  };
+}
+
 interface HistoriesTableDataType {
   key: string,
   date: string,
-  level: number,
   score: number,
-  talent: string,
-  guild: string,
+  master: string,
 }
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const detail_columns: ColumnsType<DetailTableDataType> = [
   {
@@ -80,29 +70,17 @@ const histories_columns: ColumnsType<HistoriesTableDataType> = [
     key: "date",
   },
   {
-    title: "レベル",
-    dataIndex: "level",
-    key: "level",
-  },
-  {
     title: "戦闘力",
     dataIndex: "score",
     key: "score",
   },
   {
-    title: "特性",
-    dataIndex: "talent",
-    key: "talent",
+    title: "軍団長",
+    dataIndex: "master",
   },
-  {
-    title: "軍団",
-    dataIndex: "guild",
-    key: "guild",
-  }
-]
+];
 
-
-const PlayerDetail: React.FC = () => {
+const GuildDetail: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -117,7 +95,7 @@ const PlayerDetail: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = `${process.env.REACT_APP_API_ENDPOINT}/players/${params.id}`
+        const url = `${process.env.REACT_APP_API_ENDPOINT}/guilds/${params.id}`
         const response = await window.fetch(url);
         if (!response.ok) throw Error(response.statusText);
         const data = await response.json();
@@ -133,16 +111,16 @@ const PlayerDetail: React.FC = () => {
     fetchData();
   }, []);
 
-  const PlayerDetail = () => {
+  const GuildDetail = () => {
     if (isError) {
       return <h1>エラーが発生しました。</h1>
     } else if (isLoading) {
       return <h1>Loading...</h1>
     } else if (data) {
       const detail = data.detail;
-      const player_detail: DetailTableDataType[] = [
+      const guild_detail: DetailTableDataType[] = [
         {
-          key: "プレイヤー名",
+          key: "軍団名",
           value: detail.name,
         },
         {
@@ -150,20 +128,12 @@ const PlayerDetail: React.FC = () => {
           value: detail.server,
         },
         {
-          key: "所属軍団",
-          value: String(detail.guild_id),
-        },
-        {
-          key: "職業",
-          value: detail.job,
-        },
-        {
-          key: "レベル",
-          value: String(detail.level),
-        },
-        {
-          key: "戦闘力",
+          key: "軍団総戦闘力",
           value: String(detail.score),
+        },
+        {
+          key: "軍団長",
+          value: detail.master,
         }
       ]
       return (
@@ -172,7 +142,7 @@ const PlayerDetail: React.FC = () => {
             showHeader={false}
             pagination={false}
             columns={detail_columns}
-            dataSource={player_detail}
+            dataSource={guild_detail}
           />
         </div>
       )
@@ -181,7 +151,7 @@ const PlayerDetail: React.FC = () => {
     }
   }
 
-  const PlayerHistories = () => {
+  const GuildHistories = () => {
     if (isError) {
       return <h1>エラーが発生しました。</h1>
     } else if (isLoading) {
@@ -206,16 +176,14 @@ const PlayerDetail: React.FC = () => {
     }
   }
 
-  const PlayerHistoriesTable = () => {
+  const GuildHistoriesTable = () => {
     if (data) {
       const histories: HistoriesTableDataType[] = data.histories.slice(-7).reverse().map((h, i) => {
         return {
           key: String(i),
           date: String(h.stored_on),
-          level: Number(h.level),
           score: Number(h.score),
-          talent: String(h.talent_id),
-          guild: String(h.guild_id),
+          master: String(h.master),
         }
       })
 
@@ -237,23 +205,23 @@ const PlayerDetail: React.FC = () => {
     <div>
       <Typography>
         <Title>
-          プレイヤー詳細
+          軍団詳細
         </Title>
       </Typography>
 
       <div style={{ padding: 24, textAlign: 'left', background: colorBgContainer }}>
         <h1>基本情報</h1>
-        <PlayerDetail />
+        <GuildDetail />
       </div>
       <div style={{ padding: 24, textAlign: 'left', background: colorBgContainer }}>
-        <h1>戦闘力推移</h1>
-        <PlayerHistories />
+        <h1>軍団総戦力推移</h1>
+        <GuildHistories />
       </div>
       <div style={{ padding: 24, textAlign: 'left', background: colorBgContainer }}>
-        <PlayerHistoriesTable/>
+        <GuildHistoriesTable />
       </div>
     </div>
   )
 }
 
-export default PlayerDetail;
+export default GuildDetail;

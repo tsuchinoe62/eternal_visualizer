@@ -12,6 +12,7 @@ import Home from './Home';
 import PlayerSearch from './PlayerSearch';
 import GuildSearch from './GuildSearch';
 import PlayerDetail from './PlayerDetail';
+import GuildDetail from './GuildDetail';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -59,7 +60,8 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />}></Route>
               <Route path="/players" element={<PlayerSearch />}></Route>
               <Route path="/guilds"  element={<GuildSearch />}></Route>
-              <Route path="/player_detail/:id" element={<PlayerDetail/>}></Route>
+              <Route path="/player_detail/:id" element={<PlayerDetail />}></Route>
+              <Route path="/guild_detail/:id" element={<GuildDetail />}></Route>
             </Routes>
           </div>
         </Content>
