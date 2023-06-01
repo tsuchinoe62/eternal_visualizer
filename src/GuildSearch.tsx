@@ -46,6 +46,7 @@ const columns: ColumnsType<DataType> = [
     title: "軍団名",
     dataIndex: "name",
     width: "20%",
+    render: (text: string, record: DataType) => <a href={`guild_detail/${record.id}`}>{text}</a>
   },
   {
     title: "軍団長名",

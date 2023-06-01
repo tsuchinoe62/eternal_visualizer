@@ -49,6 +49,7 @@ const columns: ColumnsType<DataType> = [
     title: "名前",
     dataIndex: "name",
     width: "20%",
+    render: (text: string, record: DataType) => <a href={`player_detail/${record.id}`}>{text}</a>
   },
   {
     title: "職業",
